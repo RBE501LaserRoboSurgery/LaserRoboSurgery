@@ -276,14 +276,14 @@
   </link>
 
   <!-- joint - 6 ___ end_effector -->
-  <joint name="${prefix}joint6-end_effector" type="fixed">
+ <!--  <joint name="${prefix}joint6-end_effector" type="fixed">
   <parent link="${prefix}link_6"/>
   <child link="${prefix}end_effector"/>
   <origin rpy="0 0 0" xyz="0 0 0"/>
   </joint>
+ -->
 
-<!--
- <link name="${prefix}end_effector">
+ <!-- <link name="${prefix}end_effector">
  <inertial>
  <origin xyz="0 0 0" rpy="-1.57079632679 0 1.57079632679" />
  <mass value="0.14696" />
@@ -305,10 +305,10 @@
  <mesh filename="package://irb120_description/meshes/collision/EndEffector.SLDPRT.STL" />
  </geometry>
  </collision>
- </link>
--->
+ </link> -->
 
- <link name="${prefix}end_effector">
+
+ <!-- <link name="${prefix}end_effector">
   <visual>
    <origin xyz="0 0 0" rpy="-1.57079632679 0 1.57079632679" />
    <geometry>
@@ -329,46 +329,46 @@
    <mass value="0.01"/>
    <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
  </inertial>
- </link>
+ </link> -->
      
   <!-- end_effector ____ end_frame -->
-  <joint name="${prefix}vacuum_joint" type="revolute">
+ <!--  <joint name="${prefix}vacuum_joint" type="revolute">
   <parent link="${prefix}end_effector"/>
   <child link="${prefix}end_frame"/>
   <limit effort="30" velocity="1.0" lower="0" upper="0" />
   <origin rpy="0 0 0" xyz="0.160 0.0325 0"/>
-  </joint>
+  </joint> -->
 
   <!-- Description of end_frame -->
-  <link name="${prefix}end_frame">
+ <!--  <link name="${prefix}end_frame">
   <gravity>0</gravity>
   <inertial>
   <origin rpy="0 0 0" xyz="0.000000 0.000000 0.000000"/>
   <mass value="0.0001"/>
   <inertia ixx="1e-08" ixy="0" ixz="0" iyy="1e-08" iyz="0" izz="1e-08"/>
   </inertial>
-  </link>
+  </link> -->
 
  <gazebo>
- <plugin name="gazebo_ros_vacuum_gripper" filename="libgazebo_ros_vacuum_gripper.so">
+ <!-- <plugin name="gazebo_ros_vacuum_gripper" filename="libgazebo_ros_vacuum_gripper.so">
  <robotNamespace>irb120</robotNamespace>
  <bodyName>${prefix}end_frame</bodyName>
  <topicName>grasping</topicName>
  <maxForce>20</maxForce>
  <maxDistance>0.10</maxDistance>
  <minDistance>0.10</minDistance>
- </plugin>
+ </plugin> -->
  </gazebo>
  
- <joint name="${prefix}camera_joint" type="fixed">
+ <!-- <joint name="${prefix}camera_joint" type="fixed">
     <origin xyz="0.068 -0.0325 0" rpy="0 0 0"/>
     <parent link="${prefix}end_effector"/>
     <child link="${prefix}camera_link"/>
-  </joint>
+  </joint> -->
   
 <!-- Camera -->
    
-   <link name="${prefix}camera_link">
+   <!-- <link name="${prefix}camera_link">
    <collision>
    <origin xyz="0 0 0" rpy="1.57079632679 0 1.57079632679"/>
    <geometry>
@@ -388,7 +388,7 @@
    <origin xyz="0 0 0" rpy="1.57079632679 0 1.57079632679"/>
    <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
    </inertial>
-   </link>
+   </link> -->
 
 
 
@@ -480,7 +480,7 @@
   </actuator>
   </transmission>
 
-  <transmission name="${prefix}tran7">
+  <!-- <transmission name="${prefix}tran7">
   <type>transmission_interface/SimpleTransmission</type>
   <joint name="${prefix}vacuum_joint">
   <hardwareInterface>EffortJointInterface</hardwareInterface>
@@ -489,7 +489,7 @@
   <hardwareInterface>EffortJointInterface</hardwareInterface>
   <mechanicalReduction>1</mechanicalReduction>
   </actuator>
-  </transmission>
+  </transmission> -->
 
 <!-- Gazebo-specific link properties -->
 
@@ -530,12 +530,12 @@
 
   
  <!-- camera -->
-  <gazebo reference="${prefix}camera_link">
+  <!-- <gazebo reference="${prefix}camera_link">
     <sensor type="camera" name="camera1">
       <update_rate>30.0</update_rate>
       <camera name="head">
         <horizontal_fov>.95</horizontal_fov>
-        <!-- <horizontal_fov>0.95</horizontal_fov> -->
+        <!- <horizontal_fov>0.95</horizontal_fov> ->
         <image>
           <width>800</width>
           <height>800</height>
@@ -547,9 +547,9 @@
         </clip>
         <noise>
           <type>gaussian</type>
-          <!-- Noise is sampled independently per pixel on each frame.
+          <!- Noise is sampled independently per pixel on each frame.
                That pixel's noise value is added to each of its color
-               channels, which at that point lie in the range [0,1]. -->
+               channels, which at that point lie in the range [0,1]. ->
           <mean>0.0</mean>
           <stddev>0.007</stddev>
         </noise>
@@ -569,7 +569,7 @@
         <distortionT2>0.0</distortionT2>
       </plugin>
     </sensor>
-  </gazebo>
+  </gazebo> -->
 
 
 </xacro:macro>
