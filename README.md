@@ -2,4 +2,4 @@
 
 ## Setup
 * Clone
-* cd into the cloned repo and 'catkin_make' 
+* cd into the cloned repo and `catkin_make` 
