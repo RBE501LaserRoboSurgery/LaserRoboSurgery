@@ -27,10 +27,20 @@ class robot:
 		self.rho+=[ro]
 
 	def iterIK(self,xf,qi=None):
- 		return (self.urdf.inverse_kinematics([[1, 0, 0, xf[0]],
-                             [0, 1, 0, xf[1]],
-                             [0, 0, 1, xf[2]],
-                             [0, 0, 0, 1]]))
+		transform = np.eye(4,4)
+		transform[1,1] = -1
+		transform[2,2] = -1
+		transform[0,3] = xf[0]
+		transform[1,3] = xf[1]
+		transform[2,3] = xf[2] 
+		print(transform)
+		jointAngles = self.urdf.inverse_kinematics(transform)
+		print('IK Solution calculated')
+		print(jointAngles)
+		print('Validating FK')
+		print(self.urdf.forward_kinematics(jointAngles))
+ 		return (jointAngles)
+
 	def IRB120(self):
 		self.dh=[]
 		self.rho=[]

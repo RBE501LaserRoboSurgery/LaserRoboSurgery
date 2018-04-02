@@ -5,8 +5,10 @@ from std_msgs.msg import Bool
 from geometry_msgs.msg import Point
 import time as t
 import math as m
+
 t0=t.time()
 Robot=None
+
 class rosact(object):
     def __init__(self):
         rospy.init_node('act')
@@ -20,13 +22,15 @@ class rosact(object):
         rospy.sleep(1)
 
     def write(self,rob,pos=None):
-        while True:
-            x=0.1+0.01*m.cos(t.time()-t0)
-            y=0.1#*m.sin(t.time()-t0)
-            z=0.1
+        try:
+            # while True:
+            x=0.350
+            z=0.400
+            y=-0.200#*m.sin(t.time()-t0)
             pos=rob.iterIK([x,y,z])
             pos=pos[1:]
             print(pos)
+
             #pos=[0]*6
             #pos[4]=m.pi/2
             # pos[3]=0
@@ -36,9 +40,14 @@ class rosact(object):
             print('Writing ')
             print(pos)
             for i in range(len(pos)):
-                msg.data=pos[i]+(t.time()-t0)/180 if i==4 else pos[i]
+                # msg.data=pos[i]+(t.time()-t0)/180 if i==4 else pos[i]
+                msg.data = pos[i]
                 self.pubs[i].publish(msg)
             #rospy.sleep(0.01)
+        except KeyboardInterrupt as e:
+            print('Execution Stopped.')
+            # raise e
+            
 
 
 def main():
@@ -49,7 +58,11 @@ def main():
     #print(a)
     #print(t.SetEffectorPosition(a[0,0:6]))
     act=rosact()
-    act.write(Robot)
+    try:    
+        act.write(Robot)
+    except KeyboardInterrupt:
+        print('Execution stopped.')
+
     print('this shouldnt be displayed')
 
 if __name__== '__main__':
