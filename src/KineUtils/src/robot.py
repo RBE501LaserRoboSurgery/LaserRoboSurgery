@@ -12,13 +12,15 @@ class robot:
 		self.dh=[]
 		self.home=[]
 		self.rho=[]
-		if name=='irb120':
-			self.IRB120()
+		pre=getattr(self, name)
+		print(pre)
+		if not (pre== None):
+			pre()
 
 	def BuildKineModules(self):
 		assert (len(self.dh)>0,'No dh params found')
 		#assert( len(self.rho)==len(self.dh),'Specify all joint descriptions')
-		#self.IK=IK(self)
+		self.IK=IK(self)
 		print('Build Success')
 
 	def AddLink(self,alpha,d,a,theta,ro):
@@ -26,26 +28,25 @@ class robot:
 		self.home+=[theta]
 		self.rho+=[ro]
 
-	def iterIK(self,xf,qi=None):
- 		return (self.urdf.inverse_kinematics([[1, 0, 0, xf[0]],
-                             [0, 1, 0, xf[1]],
-                             [0, 0, 1, xf[2]],
-                             [0, 0, 0, 1]]))
+	def ikpyNew(self,xf):
+		print(self.urdf.forward_kinematics([0,0,0,0,0,0]))
+		return (self.urdf.inverse_kinematics([[1, 0, 0, xf[0]],[0, 1, 0, xf[1]],[0, 0, 1, xf[2]],[0, 0, 0, 1]]))
+	
 	def IRB120(self):
 		self.dh=[]
 		self.rho=[]
-		self.AddLink(m.pi/2,0.29,0,0,1)
-		self.AddLink(0,0,0.27,m.pi/2,1)
-		self.AddLink(m.pi/2,0,0.07,0,1)
-		self.AddLink(-m.pi/2,0.302,0,0,1)
-		self.AddLink(m.pi/2,0,0,0,1)
-		self.AddLink(0,0.072,0,m.pi,1)
+		self.AddLink(-m.pi/2,0.29,0,0,1)
+		self.AddLink(0,0,0.27,-m.pi/2,1)
+		self.AddLink(-m.pi/2,0,0.07,0,1)
+		self.AddLink(m.pi/2,0.302,0,0,1)
+		self.AddLink(-m.pi/2,0,0,0,1)
+		self.AddLink(0,0.072,0,-m.pi,1) 
 
 	def calcDH(self,q):
 		assert (len(q)==len(self.rho))
 		for qs in range(len(q)):
 			self.dh[qs][3]=self.home[qs]
-			self.dh[qs][3]+=q[qs]
+			self.dh[qs][3]+=-q[qs]
 
 	def GetEffectorPosition(self,q):
 		q=[q1*math.pi/180 for q1 in q]
@@ -56,4 +57,7 @@ class robot:
 
 
 	def SetEffectorPosition(self,xf):
-		return self.iterIK(xf)
+		# return self.IK.IterJInv(xf)
+		print(self.urdf.forward_kinematics([0,0,0,0,0,0]))
+		print('in sef')
+		return self.IK.NewtonIK(xf)

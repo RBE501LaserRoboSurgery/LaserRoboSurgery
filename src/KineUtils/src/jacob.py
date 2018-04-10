@@ -7,17 +7,18 @@ def Jacobian(dh,rho):
 
 	t=ExtractOrients(T[-1][0:3,0:3])
 
-	zs=[np.dot(t,np.array([0,0,1,1]))[0,0:3] for t in T]
+	zs=[np.array([0,0,1]).reshape([1,3])]+[np.dot(t,np.array([0,0,1,1]))[0,0:3] for t in T]
+	zs=zs[:-1]
 
 	On=np.dot(T[-1],np.array([0,0,0,1]))
 
-	Os=[(On-np.dot(T[i],np.array([0,0,0,1])))[0,0:3] for i in range(len(T))]
-
+	Os=[(On-np.dot(T[i],np.array([0,0,0,1])))[0,0:3] for i in range(len(T)-1)]
+	Os=[On-np.zeros([1,4])]+Os
+	
 	j=np.zeros([6,len(zs)])
 
 	for l in range(len(zs)):
 		j[:,l]=np.concatenate((np.cross(zs[l][0,0:3],Os[l][0,0:3]).reshape([3,1]),zs[l][0,0:3].reshape([3,1])),axis=0).reshape([6]) if rho[l]==1 else np.concatenate((zs[l][0,0:3].reshape([3,1]),np.zeros([3,1])),axis=0).reshape([6])
-
 	return np.matrix(j)
 
 

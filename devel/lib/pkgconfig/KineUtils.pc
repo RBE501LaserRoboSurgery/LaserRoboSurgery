@@ -1,0 +1,8 @@
+prefix=/home/endo/abb_ws/devel
+
+Name: KineUtils
+Description: Description of KineUtils
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/endo/abb_ws/devel/lib 
+Requires: 

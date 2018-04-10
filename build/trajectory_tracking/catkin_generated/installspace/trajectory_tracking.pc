@@ -1,0 +1,8 @@
+prefix=/home/endo/abb_ws/install
+
+Name: trajectory_tracking
+Description: Description of trajectory_tracking
+Version: 0.0.0
+Cflags: -I/home/endo/abb_ws/install/include
+Libs: -L/home/endo/abb_ws/install/lib 
+Requires: 

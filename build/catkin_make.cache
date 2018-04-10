@@ -1,0 +1,2 @@
+KineUtils:abb_irb120/irb120:abb_irb120/irb120_control:abb_irb120/irb120_description:abb_irb120/irb120_gazebo:abb_irb120/irb120_moveit_config:abb_irb120/irb120_tf_calc:trajectory_tracking
+-DCATKIN_DEVEL_PREFIX=/home/endo/abb_ws/devel -DCMAKE_INSTALL_PREFIX=/home/endo/abb_ws/install -G Unix Makefiles

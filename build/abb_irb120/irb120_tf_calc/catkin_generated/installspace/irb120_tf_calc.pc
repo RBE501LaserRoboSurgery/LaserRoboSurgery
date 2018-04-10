@@ -1,0 +1,8 @@
+prefix=/home/endo/abb_ws/install
+
+Name: irb120_tf_calc
+Description: Description of irb120_tf_calc
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/endo/abb_ws/install/lib 
+Requires: roscpp geometry_msgs tf

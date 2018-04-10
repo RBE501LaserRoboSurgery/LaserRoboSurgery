@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: irb120_description
+    relative_path: urdf/irb120.urdf
+  SRDF:
+    relative_path: config/abb_irb120_3_58.srdf
+  CONFIG:
+    author_name: Nishant
+    author_email: ndoshi@wpi.edu
+    generated_timestamp: 1521939231

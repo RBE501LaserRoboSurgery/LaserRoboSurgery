@@ -1,0 +1,10 @@
+(cl:defpackage trajectory_tracking-srv
+  (:use )
+  (:export
+   "TRAJECTORYPOINT"
+   "<TRAJECTORYPOINT-REQUEST>"
+   "TRAJECTORYPOINT-REQUEST"
+   "<TRAJECTORYPOINT-RESPONSE>"
+   "TRAJECTORYPOINT-RESPONSE"
+  ))
+
