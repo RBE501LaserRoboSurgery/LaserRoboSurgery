@@ -6,8 +6,8 @@ import math
 import ikpy
 import os
 import sys
-sys.path.insert(0, './trac_ik/trac_ik_python/src/trac_ik_python')
-from trac_ik import IK as ik
+# sys.path.insert(0, './trac_ik/trac_ik_python/src/trac_ik_python')
+# from trac_ik import IK as ik
  
 class robot:
 	def __init__(self,name='IRB120'):
@@ -32,9 +32,9 @@ class robot:
 		self.home+=[theta]
 		self.rho+=[ro]
 
-	def ikpyNew(self,xf):
-		print(self.urdf.forward_kinematics([0,0,0,0,0,0]))
-		return (self.urdf.inverse_kinematics([[1, 0, 0, xf[0]],[0, 1, 0, xf[1]],[0, 0, 1, xf[2]],[0, 0, 0, 1]]))
+	# def ikpyNew(self,xf):
+	# 	print(self.urdf.forward_kinematics([0,0,0,0,0,0]))
+	# 	return (self.urdf.inverse_kinematics([[1, 0, 0, xf[0]],[0, 1, 0, xf[1]],[0, 0, 1, xf[2]],[0, 0, 0, 1]]))
 	
 	def IRB120(self):
 		self.dh=[]

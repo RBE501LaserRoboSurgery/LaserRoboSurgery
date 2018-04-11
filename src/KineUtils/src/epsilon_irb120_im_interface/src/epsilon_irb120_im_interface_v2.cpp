@@ -315,7 +315,7 @@ Vectorq6x1 get_nearest(std::vector<Vectorq6x1> all_qvec, Vectorq6x1 prev) {
     int ri=0;
     for (int i = 0; i < all_qvec.size(); i++) { 
         if (dt==0)
-            dt=dthetas(all_qvec[i],prev)
+            dt=dthetas(all_qvec[i],prev);
         ri=dthetas(all_qvec[i],prev)>dt?i:ri;
     }
     return all_qvec[ri];
@@ -347,13 +347,36 @@ int checkSolns(std::vector<Vectorq6x1> all_qvec, int nsolns) {
     return temp_i;
 }
 
+float[] convertE2Q(float[] a){
+    float r[4];
+    r[3]=cos(a[0])*cos(a[1])*cos(a[2])-sin(a[0])*sin(a[1])*sin(a[2]);
+    r[0]=sin(a[0])*sin(a[1])*cos(a[2])+cos(a[0])*cos(a[1])*sin(a[2]);
+    r[1]=sin(a[0])*cos(a[1])*cos(a[2])+cos(a[0])*sin(a[1])*sin(a[2]);
+    r[2]=cos(a[0])*sin(a[1])*cos(a[2])-sin(a[0])*cos(a[1])*sin(a[2]);
+    return r;
+}
+
+
 int main(int argc, char** argv) {
     ros::init(argc, argv, "Traj_pusher"); // this will be the node name;
     ros::NodeHandle nh;
     ros::Publisher pub = nh.advertise<trajectory_msgs::JointTrajectory>("joint_path_command", 1);  
     ROS_INFO("setting up subscribers ");
     ros::Subscriber sub_js = nh.subscribe("/joint_states",1,jointStateCB);
-    ros::Subscriber sub_im = nh.subscribe("example_marker/feedback", 1, markerListenerCB);
+    // ros::Subscriber sub_im = nh.subscribe("example_marker/feedback", 1, markerListenerCB);
+
+    g_p[0] = 350;
+    g_p[1] = 0;
+    g_p[2] = 600;
+    float rots[]={0,0,0};
+    float *rotQ=convertE2Q(rots);
+    g_quat.x() = rotQ[0];
+    g_quat.y() = rotQ[1];
+    g_quat.z() = rotQ[2];
+    g_quat.w() = rotQ[3]   
+    g_R = g_quat.matrix(); 
+
+
     ros::ServiceServer service = nh.advertiseService("move_trigger", triggerService);   
     
 
