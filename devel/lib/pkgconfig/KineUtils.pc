@@ -1,8 +1,0 @@
-prefix=/home/alka/LaserRoboSurgery/devel
-
-Name: KineUtils
-Description: Description of KineUtils
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/alka/LaserRoboSurgery/devel/lib 
-Requires: 
