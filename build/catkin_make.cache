@@ -1,0 +1,2 @@
+KineUtils:abb_irb120/irb120:abb_irb120/irb120_control:abb_irb120/irb120_description:abb_irb120/irb120_gazebo:abb_irb120/irb120_tf_calc:inv_kinematics
+-DCATKIN_DEVEL_PREFIX=/home/alka/LaserRoboSurgery/devel -DCMAKE_INSTALL_PREFIX=/home/alka/LaserRoboSurgery/install -G Unix Makefiles

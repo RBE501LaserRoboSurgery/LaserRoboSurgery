@@ -1,0 +1,8 @@
+prefix=/home/alka/LaserRoboSurgery/devel
+
+Name: inv_kinematics
+Description: Description of inv_kinematics
+Version: 0.1.0
+Cflags: -I/home/alka/LaserRoboSurgery/src/inv_kinematics/include
+Libs: -L/home/alka/LaserRoboSurgery/devel/lib -linv_kinematics_core
+Requires: roscpp sensor_msgs geometry_msgs

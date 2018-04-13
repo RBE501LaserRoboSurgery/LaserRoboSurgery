@@ -1,0 +1,8 @@
+prefix=/home/alka/LaserRoboSurgery/install
+
+Name: irb120_control
+Description: Description of irb120_control
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/alka/LaserRoboSurgery/install/lib 
+Requires: 

@@ -1,0 +1,8 @@
+prefix=/home/alka/LaserRoboSurgery/devel
+
+Name: irb120_description
+Description: Description of irb120_description
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/alka/LaserRoboSurgery/devel/lib 
+Requires: 

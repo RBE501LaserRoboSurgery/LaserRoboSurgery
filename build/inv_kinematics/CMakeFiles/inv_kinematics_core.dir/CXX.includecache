@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/alka/LaserRoboSurgery/src/inv_kinematics/include/inv_kinematics/AnalyticalIK.hpp
+Eigen/Dense
+-
+iostream
+-
+
+/home/alka/LaserRoboSurgery/src/inv_kinematics/src/AnalyticalIK.cpp
+inv_kinematics/AnalyticalIK.hpp
+/home/alka/LaserRoboSurgery/src/inv_kinematics/src/inv_kinematics/AnalyticalIK.hpp
+
