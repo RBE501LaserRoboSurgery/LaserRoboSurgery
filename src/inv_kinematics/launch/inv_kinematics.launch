@@ -1,8 +1,0 @@
-<launch>
-
-  <!-- Launch Inv Kinematics Node -->
-  <node pkg="inv_kinematics" type="inv_kinematics" name="inv_kinematics" output="screen">
-    <rosparam command="load" file="$(find inv_kinematics)/config/default.yaml" />
-  </node>
-
-</launch>
