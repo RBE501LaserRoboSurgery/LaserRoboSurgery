@@ -62,10 +62,14 @@ def renderGUI(thread_name, delay):
 
 			cv2.imshow('frame',frame)
 			k = cv2.waitKey(1) & 0xFF
-			if k == ord('q'):
+			if k == ord('q'):		# Quit
 				break
-			elif k == ord('d'):
+			elif k == ord('d'):		# Points selection done
 				clicks_done = True
+			elif k == ord('c'):		# Clear points
+				clicks = np.zeros((1,2), np.uint8)
+				target_points = []
+				clicks_done = False
 
 			# write the flipped frame
 			# out.write(frame)
