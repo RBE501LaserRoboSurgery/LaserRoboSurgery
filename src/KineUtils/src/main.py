@@ -1,4 +1,4 @@
-from robot import robot
+from factory import robot
 import rospy
 from std_msgs.msg import Float64
 from std_msgs.msg import Bool
@@ -22,12 +22,20 @@ class rosact(object):
         rospy.sleep(1)
 
     def write(self,rob,pos=None):
+# <<<<<<< HEAD
+        traj_st=time.time()
+
+        while True:
+            pts=traj_pnt('square',traj_st,pts)
+            pos=rob.IK_bfgs(pts)
+# =======
         try:
             # while True:
             x=0.350
             z=0.400
             y=-0.200#*m.sin(t.time()-t0)
             pos=rob.iterIK([x,y,z])
+# >>>>>>> fe9901f37a59c0681df3eebb48965f692c6aede5
             pos=pos[1:]
             print(pos)
 
@@ -44,20 +52,36 @@ class rosact(object):
                 msg.data = pos[i]
                 self.pubs[i].publish(msg)
             #rospy.sleep(0.01)
+# <<<<<<< HEAD
+    
+    # def traj_pnt(tr_type,tm,st,vel=0.1,**kwargs):
+    #     t=time.time()
+    #     assert type(tr_type) is str
+    #     if type.lower()=='square':
+    #         if st+vel*((t-tm)%` )>kwargs[side]:
+
+
+# =======
         except KeyboardInterrupt as e:
             print('Execution Stopped.')
             # raise e
             
+# >>>>>>> fe9901f37a59c0681df3eebb48965f692c6aede5
 
 
 def main():
-    Robot=robot('irb120')
+    Robot=robot()
     Robot.BuildKineModules()
-    #jts=[30,0,0,0,10+time.time()-t0,0]
-    #a=Robot.GetEffectorPosition(jts)
-    #print(a)
-    #print(t.SetEffectorPosition(a[0,0:6]))
+    jts=[0,10,30,0,20,0,0]
+    a=Robot.GetEffectorPosition(jts)
+    # print(a)
+    # print('final pos')
+    print(Robot.SetEffectorPosition(a)*180/m.pi)
+
     act=rosact()
+# <<<<<<< HEAD
+    # act.write(Robot)
+
     try:    
         act.write(Robot)
     except KeyboardInterrupt:
