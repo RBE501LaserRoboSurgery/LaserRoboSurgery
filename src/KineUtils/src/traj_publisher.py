@@ -5,19 +5,32 @@ import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
 from utils import *
+import cPickle as pickle
+from Config import *
 ## This script is modified from the original script found here: 
 
 from std_msgs.msg import String
 
 def move_group_python_interface_tutorial():
-	## BEGIN_TUTORIAL
-	##
-	## Setup
-	## ^^^^^
-	## CALL_SUB_TUTORIAL imports
-	##
-	## First initialize moveit_commander and rospy.
-	print "============ Starting tutorial setup"
+	
+
+
+	### Resets the arm to home position
+	def go_home(group):
+		pose_target = geometry_msgs.msg.Pose()
+		oQs=convertE2Q(HOME_POS['angs'])
+		pose_target.orientation.w = oQs[3]
+		pose_target.orientation.x=oQs[0]
+		pose_target.orientation.y=oQs[1]
+		pose_target.orientation.z=oQs[2]
+		pose_target.position.x = HOME_POS['pts'][0]
+		pose_target.position.y = HOME_POS['pts'][1]
+		pose_target.position.z = HOME_POS['pts'][2]
+		group.set_pose_target(pose_target)
+		plan1 = group.plan()
+		group.execute(plan1)
+
+	print "============ Starting setup"
 	moveit_commander.roscpp_initialize(sys.argv)
 	rospy.init_node('move_group_python_interface_tutorial',
 				  anonymous=True)
@@ -45,8 +58,7 @@ def move_group_python_interface_tutorial():
 
 	## Wait for RVIZ to initialize. This sleep is ONLY to allow Rviz to come up.
 	print "============ Waiting for RVIZ..."
-	rospy.sleep(10)
-	print "============ Starting tutorial "
+	rospy.sleep(5)
 
 	## Getting Basic Information
 	## ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -63,37 +75,37 @@ def move_group_python_interface_tutorial():
 
 	## Sometimes for debugging it is useful to print the entire state of the
 	## robot.
-	print "============ Printing robot state"
-	print robot.get_current_state()
-	print "============"
+	print "============ Resetting to home"
+	go_home(group)
+	rospy.sleep(5)
+	print "============ Deploy Laser"
+	go_to_point(group,DEPLOY_LASER['pts'],DEPLOY_LASER['angs'])
+	rospy.sleep(5)
+	# config_home= robot.get_current_state()
+	# print(config_home)
 
+	# try:
+	# 	config_home = pickle.load(open("home.p", "rb"))
+	# except (OSError, IOError) as e:
+	# 	pickle_out = open("home.p","wb")
+	# 	pickle.dump(config_home, pickle_out)
+	# 	pickle_out.close()
+	print "============ Initial pose"
+	# print(config_home.joint_state.position)
+	# print(group.get_current_pose())
 
 	## Planning to a Pose goal
 	## ^^^^^^^^^^^^^^^^^^^^^^^
 	## We can plan a motion for this group to a desired pose for the 
 	## end-effector
 	# print "============ Generating plan 1"
-	oQs=convertE2Q([0,-m.pi/2,0])
-	pose_target = geometry_msgs.msg.Pose()
-	pose_target.orientation.w = oQs[3]
-	pose_target.orientation.x=oQs[0]
-	pose_target.orientation.y=oQs[1]
-	pose_target.orientation.z=oQs[2]
-	pose_target.position.x = 0.2
-	pose_target.position.y = -0.05
-	pose_target.position.z = 0.08
-
-	group.set_pose_target(pose_target)
+	
+	
 
 	# ## Now, we call the planner to compute the plan
 	# ## and visualize it if successful
 	# ## Note that we are just planning, not asking move_group 
 	# ## to actually move the robot
-	plan1 = group.plan()
-
-	print "============ Waiting while RVIZ displays plan1..."
-	rospy.sleep(10)
-
 
 	## You can ask RVIZ to visualize a plan (aka trajectory) for you.  But the
 	## group.plan() method does this automatically so this is not that useful
@@ -143,69 +155,86 @@ def move_group_python_interface_tutorial():
 
 	# plan2 = group.plan()
 
-	# print "============ Waiting while RVIZ displays plan2..."
-	# rospy.sleep(5)
-
-
 	## Cartesian Paths
 	## ^^^^^^^^^^^^^^^
 	## You can plan a cartesian path directly by specifying a list of waypoints 
 	## for the end-effector to go through.
-	waypoints = []
 
-	# start with the current pose
-	waypoints.append(group.get_current_pose().pose)
-
-
-	# first orient gripper and move forward (+x)
-	wpose = geometry_msgs.msg.Pose()
-
-
-	for t in range(8):
-		wpose.orientation.w =oQs[3]
-		wpose.orientation.x=oQs[0]
-		wpose.orientation.y=oQs[1]
-		wpose.orientation.z=oQs[2]
-		wpose.position.x = waypoints[0].position.x + 0.005*t-0.005*int(t/4)
-		wpose.position.y = waypoints[0].position.y + 0.005*int(t/4)
-		wpose.position.z = 0.08#waypoints[0].position.z
-		waypoints.append(copy.deepcopy(wpose))
-
-	# second move down
-	# wpose.position.z -= 0.10
-	# waypoints.append(copy.deepcopy(wpose))
-
-	# third move to the side
-	# wpose.position.y += 0.05
-	# waypoints.append(copy.deepcopy(wpose))
-
-	## We want the cartesian path to be interpolated at a resolution of 1 cm
-	## which is why we will specify 0.01 as the eef_step in cartesian
-	## translation.  We will specify the jump threshold as 0.0, effectively
-	## disabling it.
-	(plan3, fraction) = group.compute_cartesian_path(
-							   waypoints,   # waypoints to follow
-							   0.01,        # eef_step
-							   0.0)         # jump_threshold
-							  
-	group.execute(plan3)
-	print "============ Waiting while RVIZ displays plan3..."
+	for pt in TEST_SQUARE['pts']:
+		go_to_point(group,pt,TEST_SQUARE['angs'])
+		
+	# rospy.sleep(5)
+	# follow_points(group,TEST_LINE['pts'],TEST_LINE['angs'])
 	rospy.sleep(5)
-
 
 	## Adding/Removing Objects and Attaching/Detaching Objects
 	## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	## First, we will define the collision object message
 	collision_object = moveit_msgs.msg.CollisionObject()
 
-
-
 	## When finished shut down moveit_commander.
 	moveit_commander.roscpp_shutdown()
 
-	## END_TUTORIAL
-
 	print "============ STOPPING"
+
+def follow_points(group,pts,angs):
+	waypoints = []
+
+	# start with the current pose
+	waypoints.append(group.get_current_pose().pose)
+
+	# first orient gripper and move forward (+x)
+	pose_target = geometry_msgs.msg.Pose()
+	group.clear_pose_targets()
+	try:
+		for pt in pts:
+			pose_target = geometry_msgs.msg.Pose()
+			oQs=convertE2Q([angs[0],angs[1],angs[2]])
+			pose_target.orientation.w = oQs[3]
+			pose_target.orientation.x=oQs[0]
+			pose_target.orientation.y=oQs[1]
+			pose_target.orientation.z=oQs[2]
+			pose_target.position.x = pt[0]
+			pose_target.position.y = pt[1]
+			pose_target.position.z = pt[2]
+			waypoints.append(copy.deepcopy(pose_target))
+		(plan, fraction) = group.compute_cartesian_path(
+							   waypoints,   # waypoints to follow
+							   0.01,        # eef_step
+							   0.0)         # jump_threshold
+		group.execute(plan)
+	except:
+		pass
+
+
+### Moves end effector to desired pt at orientation angs
+def go_to_point(group,pt,angs):
+	in_robot_range(pt)
+	try:
+		pose_target = geometry_msgs.msg.Pose()
+		oQs=convertE2Q([angs[0],angs[1],angs[2]])
+		pose_target.orientation.w = oQs[3]
+		pose_target.orientation.x=oQs[0]
+		pose_target.orientation.y=oQs[1]
+		pose_target.orientation.z=oQs[2]
+		pose_target.position.x = pt[0]
+		pose_target.position.y = pt[1]
+		pose_target.position.z = pt[2]
+		group.set_pose_target(pose_target)
+		plan1 = group.plan()
+		group.execute(plan1)
+	except:
+		pass
+
+### Checks if the desired pt lies in config space
+def in_robot_range(pt):
+	x=pt[0]
+	y=pt[1]
+	z=pt[2]
+	assert x**2+y**2+(z-.290)**2>=0.17*0.17
+	assert m.atan2(y,x)>-165*m.pi/180 and m.atan2(y,x)<165*m.pi/180
+	# assert (m.sqrt(x**2+y**2)-0.25)**2+(z-0.29)**2>=0.098596
+
 
 
 if __name__=='__main__':
