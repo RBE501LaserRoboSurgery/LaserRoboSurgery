@@ -30,7 +30,7 @@ def move_group_python_interface_tutorial():
 		plan1 = group.plan()
 		group.execute(plan1)
 
-	print "============ Starting setup"
+	# print "============ Starting setup"
 	moveit_commander.roscpp_initialize(sys.argv)
 	rospy.init_node('move_group_python_interface_tutorial',
 				  anonymous=True)
@@ -57,30 +57,30 @@ def move_group_python_interface_tutorial():
 									  moveit_msgs.msg.DisplayTrajectory)
 
 	## Wait for RVIZ to initialize. This sleep is ONLY to allow Rviz to come up.
-	print "============ Waiting for RVIZ..."
-	rospy.sleep(5)
+	# print "============ Waiting for RVIZ..."
+	rospy.sleep(10)
 
 	## Getting Basic Information
 	## ^^^^^^^^^^^^^^^^^^^^^^^^^
 	##
 	## We can get the name of the reference frame for this robot
-	print "============ Reference frame: %s" % group.get_planning_frame()
+	# print "============ Reference frame: %s" % group.get_planning_frame()
 
 	## We can also print the name of the end-effector link for this group
-	print "============ Reference frame: %s" % group.get_end_effector_link()
+	# print "============ Reference frame: %s" % group.get_end_effector_link()
 
 	## We can get a list of all the groups in the robot
-	print "============ Robot Groups:"
-	print robot.get_group_names()
+	# print "============ Robot Groups:"
+	# print robot.get_group_names()
 
 	## Sometimes for debugging it is useful to print the entire state of the
 	## robot.
-	print "============ Resetting to home"
+	# print "============ Resetting to home"
 	go_home(group)
-	rospy.sleep(5)
-	print "============ Deploy Laser"
+	rospy.sleep(10)
+	# print "============ Deploy Laser"
 	go_to_point(group,DEPLOY_LASER['pts'],DEPLOY_LASER['angs'])
-	rospy.sleep(5)
+	rospy.sleep(30)
 	# config_home= robot.get_current_state()
 	# print(config_home)
 
@@ -90,7 +90,7 @@ def move_group_python_interface_tutorial():
 	# 	pickle_out = open("home.p","wb")
 	# 	pickle.dump(config_home, pickle_out)
 	# 	pickle_out.close()
-	print "============ Initial pose"
+	# print "============ Initial pose"
 	# print(config_home.joint_state.position)
 	# print(group.get_current_pose())
 
@@ -162,10 +162,11 @@ def move_group_python_interface_tutorial():
 
 	for pt in TEST_SQUARE['pts']:
 		go_to_point(group,pt,TEST_SQUARE['angs'])
+		rospy.sleep(30)
 		
 	# rospy.sleep(5)
 	# follow_points(group,TEST_LINE['pts'],TEST_LINE['angs'])
-	rospy.sleep(5)
+	rospy.sleep(10)
 
 	## Adding/Removing Objects and Attaching/Detaching Objects
 	## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -175,7 +176,7 @@ def move_group_python_interface_tutorial():
 	## When finished shut down moveit_commander.
 	moveit_commander.roscpp_shutdown()
 
-	print "============ STOPPING"
+	# print "============ STOPPING"
 
 def follow_points(group,pts,angs):
 	waypoints = []
