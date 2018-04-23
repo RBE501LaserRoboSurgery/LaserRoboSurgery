@@ -17,6 +17,12 @@ S_Z = 1.0
 # Variable to store all the clicks
 clicks = np.zeros((1,3), np.uint8)
 
+# Variable to indicate that we are still drawing
+drawing = False
+
+# Variable for 2 different drawing modes
+drawing_mode = False # (False: Double-click point add, True: scribble mode)
+
 # Status variable that defines if points for trajectory are finalized
 clicks_done = False
 
@@ -34,13 +40,27 @@ cap = cv2.VideoCapture(0)
 
 
 # mouse callback function
-def registerClick(event,x,y,flags,param):
-	global clicks, clicks_done
-	if event == cv2.EVENT_LBUTTONDBLCLK:
-		if clicks_done == False:
-			clicks = np.append(clicks, np.array([[x, y, 0]]), axis = 0)
-		# print(clicks)
-		# print(clicks_done)
+def registerClick(event, x, y, flags, param):
+	global clicks, drawing
+	if clicks_done == False:
+		if drawing_mode  == False:		# Double click mode
+			if event == cv2.EVENT_LBUTTONDBLCLK:
+				clicks = np.append(clicks, np.array([[x, y, 0]]), axis = 0)
+
+		else:					# Scribble mode
+			if event == cv2.EVENT_LBUTTONDOWN:
+				drawing = True
+
+			elif event == cv2.EVENT_MOUSEMOVE:
+				if drawing == True:
+					clicks = np.append(clicks, np.array([[x, y, 0]]), axis = 0)
+
+			elif event == cv2.EVENT_LBUTTONUP:
+				drawing = False
+				clicks = np.append(clicks, np.array([[x, y, 0]]), axis = 0)
+	# print(clicks)
+	# print(clicks_done)
+	
 
 def scalePoints(points, sx, sy, sz):
 	scale = np.array([sx, sy, sz])
@@ -101,7 +121,7 @@ def renderGUI(thread_name, delay):
 	# out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
 
 	
-	global clicks, clicks_done, target_points, cap
+	global clicks, clicks_done, target_points, cap, drawing_mode
 	while(cap.isOpened()):
 		ret, frame = cap.read()
 		if ret == True:
@@ -144,6 +164,13 @@ def renderGUI(thread_name, delay):
 				clicks = np.zeros((1,3), np.uint8)
 				target_points = []
 				clicks_done = False
+			elif k == ord('m'):		# Toggle drawing mode
+				drawing_mode = not drawing_mode
+				if drawing_mode == False:
+					print('Double-click draw mode selected')
+				else:
+					print('Scribble draw mode selected')
+
 
 			# write the flipped frame
 			# out.write(frame)
@@ -174,7 +201,6 @@ def printInfo(delay):
 
 		# If we just transition to clicks done
 		if clicks_done_old == False and clicks_done == True:
-			# Call trajectory maker
 
 			# Convert point from cam frame to world frame
 			convertCamToWorld(target_points)
