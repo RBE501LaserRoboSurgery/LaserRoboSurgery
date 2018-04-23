@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import threading
 import time
+import copy
 
 # Translation factors
 TRANS_X = 0.0
@@ -24,6 +25,9 @@ clicks_done_old = False
 
 # Final target points for the trajectory
 target_points = []
+
+# Trajectory points
+trajectory_points = []
 
 # Get camera object
 cap = cv2.VideoCapture(0)
@@ -76,8 +80,6 @@ def printPoints(points, point_name):
 	print('{0}\n {1}: \n{2}\n'.format(time.ctime(time.time()), point_name, points))
 
 
-
-
 def renderGUI(thread_name, delay):
 	# count = 0
 	# while count < 5:
@@ -93,6 +95,7 @@ def renderGUI(thread_name, delay):
 	# Connect mouse interrupt
 	cv2.setMouseCallback('frame',registerClick)
 
+
 	# Define the codec and create VideoWriter object
 	# fourcc = cv2.VideoWriter_fourcc(*'XVID')
 	# out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
@@ -103,6 +106,15 @@ def renderGUI(thread_name, delay):
 		ret, frame = cap.read()
 		if ret == True:
 
+			# Get frame size
+			width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+			height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+
+			# Draw crosshair at frame center
+			cv2.drawMarker(frame, (int(width/2), int(height/2)), (0,0,255))
+
+
+			# Draw clicked points
 			target_points = clicks[1:]
 			# print(target_points)
 			for point in target_points:
@@ -110,7 +122,17 @@ def renderGUI(thread_name, delay):
 				if clicks_done == False:
 					cv2.circle(frame, (point[0], point[1]), 5, (255,0,0), -1)
 				else:
-					cv2.circle(frame, (point[0], point[1]), 5, (0,255,0), -1)
+					cv2.circle(frame, (point[0], point[1]), 5, (0,255,0), -1)			
+
+
+			# # If the trajectory points are available, draw them
+			# for point in trajectory_points:
+			# 	# print(point)
+			# 	if clicks_done == False:
+			# 		cv2.circle(frame, (point[0], point[1]), 5, (255,0,0), -1)
+			# 	else:
+			# 		cv2.circle(frame, (point[0], point[1]), 5, (0,255,0), -1)
+
 
 			cv2.imshow('frame',frame)
 			k = cv2.waitKey(1) & 0xFF
@@ -137,6 +159,8 @@ def printInfo(delay):
 	global clicks_done_old
 	while 1:
 		time.sleep(delay)
+
+		# TEST CALLS
 		# print "%s: %s" % (threadName, time.ctime(time.time()))
 		# print('{0} Clicks_done: {1} and Click_points: {2}'.format(time.ctime(time.time()), clicks_done, target_points))
 
@@ -148,9 +172,22 @@ def printInfo(delay):
 		# print('{0}\n Points translated: \n{1}\n'.format(time.ctime(time.time()), translatePoints(target_points, 10, 20, 30)))
 		# print('{0}\n Y_flipped: \n{1}\n'.format(time.ctime(time.time()), flipYAxis(target_points, height)))
 
-		convertCamToWorld(target_points)
+		# If we just transition to clicks done
+		if clicks_done_old == False and clicks_done == True:
+			# Call trajectory maker
 
-		clicks_done_old = 
+			# Convert point from cam frame to world frame
+			convertCamToWorld(target_points)
+
+			# Forward points to moveIt interface
+
+		# If we just cleared the previous trajectory
+		elif clicks_done_old == True and clicks_done == False:
+			# Stop the old execution
+			print('Stop execution')
+
+		# Update old state
+		clicks_done_old = copy.deepcopy(clicks_done)
 
 
 
@@ -162,4 +199,4 @@ t1.start()
 t2.start()
 
 t1.join()
-# t2.join()
+t2.join()
