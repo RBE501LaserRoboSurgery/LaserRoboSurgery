@@ -46,7 +46,9 @@ def initCommunicator():
 
 	## Wait for RVIZ to initialize. This sleep is ONLY to allow Rviz to come up.
 	# print "============ Waiting for RVIZ..."
-	rospy.sleep(10)
+	rospy.sleep(1)
+
+	print("MoveIt Communicator initialized")
 
 
 def stopCommunicator():
@@ -65,9 +67,9 @@ def checkValidPoint(pt):
 
 
 ### Moves end effector to desired pt at orientation angs
-def goToPoint(pt, angs = [0, m.pi/4, 0]):
+def goToPoint(pt, angs = default_angs):
 	global group	
-	checkValidPoint(pt)
+	# checkValidPoint(pt)
 	try:
 		pose_target = geometry_msgs.msg.Pose()
 		oQs = convertE2Q([angs[0], angs[1], angs[2]])
@@ -82,17 +84,22 @@ def goToPoint(pt, angs = [0, m.pi/4, 0]):
 		plan1 = group.plan()
 		group.execute(plan1)
 
-		rospy.sleep(10)
+		rospy.sleep(2)
 	except:
 		pass
 
-def goToWaypoints(waypoints, angs = [0, m.pi/4, 0]):
+def goToWaypoints(waypoints, angs = default_angs):
 	for pt in waypoints:
 		goToPoint(pt, angs)
 		
 
 def goHome():
 	goToPoint(HOME_POS['pts'], HOME_POS['angs'])
+	print("Going to Home Position")
+
+def goLaserHome():
+	goToPoint(HOME_LASER_POS['pts'], HOME_LASER_POS['angs'])
+	print("Going to Laser Home Position")
 
 
 def testInterface():

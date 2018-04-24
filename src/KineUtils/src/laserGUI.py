@@ -3,17 +3,21 @@ import cv2
 import threading
 import time
 import copy
+from register import *
 from moveItCommunicator import *
 
-# Translation factors
-TRANS_X = 0.0
-TRANS_Y = 0.0
-TRANS_Z = 100.0
-
 # Scaling Factors
-S_X = 600.0
-S_Y = 450.0
-S_Z = 1.0
+S_X = 0.400
+S_Y = 0.300
+S_Z = 0.1
+
+# Translation factors
+TRANS_X = -(S_X/2)
+TRANS_Y = 0.374 - (S_Y/2)
+TRANS_Z = 0.30
+
+# print(TRANS_X)
+
 
 # Variable to store all the clicks
 clicks = np.zeros((1,3), np.uint8)
@@ -36,9 +40,8 @@ target_points = []
 # Trajectory points
 trajectory_points = []
 
-# Get camera object
-cap = cv2.VideoCapture(0)
-
+width = []
+height = []
 
 # mouse callback function
 def registerClick(event, x, y, flags, param):
@@ -83,9 +86,9 @@ def convertCamToWorld(points):
 	# Make a copy of the points
 	cam_points = np.copy(points)
 
-	# Get frame size
-	width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-	height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+	# # Get frame size
+	# width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+	# height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 
 	printPoints(cam_points, 'Cam-Points')
 
@@ -108,6 +111,29 @@ def renderGUI(thread_name, delay):
 	# 	count += 1
 	# 	# print "%s: %s" % (threadName, time.ctime(time.time()))
 	# 	print('{0} and {1}'.format(thread_name, time.ctime(time.time())))
+	global clicks, clicks_done, target_points, cap, drawing_mode, width, height
+
+
+	reg_pts = getRegistration()
+	print(reg_pts)
+	
+	# Get camera object
+	cap = cv2.VideoCapture(1)
+
+	# Reduce the size of video to 320x240 so rpi can process faster
+	cap.set(3,640)
+	cap.set(4,480)
+
+	# Get frame size
+	width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+	height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+
+	pts2 = np.float32([[0, 0], [width, 0], [width, height], [0, height]])
+	print(pts2)
+	M = cv2.getPerspectiveTransform(reg_pts.astype(np.float32), pts2)
+
+	# cv2.namedWindow('test')
+
 
 
 	# Define the frame to display everything
@@ -118,18 +144,16 @@ def renderGUI(thread_name, delay):
 
 
 	# Define the codec and create VideoWriter object
-	# fourcc = cv2.VideoWriter_fourcc(*'XVID')
-	# out = cv2.VideoWriter('output.avi',fourcc, 20.0, (640,480))
+	fourcc = cv2.VideoWriter_fourcc(*'XVID')
+	out = cv2.VideoWriter('output.avi',fourcc, 30.0, (640,480))
 
 	
-	global clicks, clicks_done, target_points, cap, drawing_mode
 	while(cap.isOpened()):
 		ret, frame = cap.read()
 		if ret == True:
 
-			# Get frame size
-			width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-			height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+			# Transform the image according to registration points
+			frame = cv2.warpPerspective(frame, M, (int(width), int(height)))			
 
 			# Draw crosshair at frame center
 			cv2.drawMarker(frame, (int(width/2), int(height/2)), (0,0,255))
@@ -155,7 +179,11 @@ def renderGUI(thread_name, delay):
 			# 		cv2.circle(frame, (point[0], point[1]), 5, (0,255,0), -1)
 
 
-			cv2.imshow('frame',frame)
+			cv2.imshow('frame', frame)
+
+
+			# cv2.imshow('test', dst)
+
 			k = cv2.waitKey(1) & 0xFF
 			if k == ord('q'):		# Quit
 				break
@@ -174,29 +202,32 @@ def renderGUI(thread_name, delay):
 
 
 			# write the flipped frame
-			# out.write(frame)
+			out.write(frame)
 		else:
 			break
 
 	# Release everything if job is finished
 	cap.release()
-	# out.release()
+	out.release()
 	cv2.destroyAllWindows()
 
 def printInfo(delay):
 	global clicks_done_old
 
 	# # Initialize communication with moveIt
-	# initCommunicator()
-	# time.sleep(2)
+	initCommunicator()
+	time.sleep(5)
 
 	# # Go to home
 	# goHome()
 	# time.sleep(2)
 
+	# # Go to home
+	goLaserHome()
+
 
 	while 1:
-		time.sleep(delay)
+		# time.sleep(delay)
 
 		# TEST CALLS
 		# print "%s: %s" % (threadName, time.ctime(time.time()))
@@ -217,10 +248,17 @@ def printInfo(delay):
 			world_pts = convertCamToWorld(target_points)
 
 			# Forward points to moveIt interface
-			# goToWaypoints(world_pts)
+			goToWaypoints(world_pts)
+
+			# Go back to laser home
+			goLaserHome()
 
 		# If we just cleared the previous trajectory
 		elif clicks_done_old == True and clicks_done == False:
+
+			# Go back to laser home
+			goLaserHome()
+
 			# Stop the old execution
 			print('Stop execution')
 
@@ -231,10 +269,19 @@ def printInfo(delay):
 
 # Create two threads as follows
 t1 = threading.Thread(target = renderGUI, args = ("Thread-1", 1,))
-t2 = threading.Thread(target = printInfo, args = (1,))
+# t2 = threading.Thread(target = printInfo, args = (1,))
+
 
 t1.start()
-t2.start()
+# t2.start()
+
+printInfo(1,)
 
 t1.join()
-t2.join()
+# t2.join()
+
+
+# pts1 = getRegistration()
+# pts2 = pts2 = np.float32([[0, 0], [640, 0], [640, 480], [0, 480]])
+# M = cv2.getPerspectiveTransform(pts1.astype(np.float32), pts2)
+# print(M)
