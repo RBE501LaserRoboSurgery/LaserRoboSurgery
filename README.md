@@ -42,9 +42,11 @@ After running this, you can see the robot moves to several poses.
 	The points can be finalized by clicking 'd'
 
 5. Once the points are registered, a new window will open showing a top view of the workspace. The trajectories can now be drawn on the frame by the mouse (either by double click or by scribbling(click and drag)). The keyboard hotkeys are:
+```
 		m: Toggle drawing mode
 		d: Finilize drawn points and start moving end effector accordingly.
 		c: Clear drawn points. Stop current execution
-		q: Quit program 
+		q: Quit program
+```
 
 6. The finalized points will be forwarded to the moveIt! planner and to the robot.
